@@ -21,5 +21,6 @@
  */
 
 module.exports.routes = {
-  'POST /api/publish': 'ReportController.publish'
+  'POST /api/publish': 'ReportController.publish',
+  'GET /api/reports/get/after/': 'ReportController.getAfter'
 };

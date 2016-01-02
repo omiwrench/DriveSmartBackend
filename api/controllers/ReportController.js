@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+var BadRequestError = require('../errors/BadRequestError');
 var ReportPublishFailedError = require('../errors/ReportPublishFailedError');
 
 module.exports = {
@@ -28,7 +29,18 @@ module.exports = {
 		catch(err){
 			return res.badRequest();
 		}
-	}	
+	},
+	getAfter: function(req, res){
+		var afterTimestamp = extractTimestampFromRequest(req);
+		ReportFetchService.getAfter(afterTimestamp, function(err, reports){
+			if(err){
+				return res.serverError();
+			}
+			else{
+				return res.ok(reports);
+			}
+		});
+	}
 };
 
 function extractReportFromRequest(req){
@@ -43,6 +55,14 @@ function extractReportFromRequest(req){
 		return report;
 	}
 	else{
-		throw new ReportPublishError(req);
+		throw new BadRequestError(req, "Bad report");
+	}
+}
+function extractTimestampFromRequest(req){
+	if(req.param('after')){
+		return new Date(req.param('after'));
+	}
+	else{
+		throw new BadRequestError(req, "Missing 'after' timestamp");
 	}
 }
